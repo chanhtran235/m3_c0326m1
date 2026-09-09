@@ -15,5 +15,8 @@ select * from students;
 drop table students;
 
 update students set name ='chanh2' where id =2;
-delete from students where id =1;
+delete from students;
+truncate  students;
 drop database c0326m1;
+
+SET SQL_SAFE_UPDATES = 0;
