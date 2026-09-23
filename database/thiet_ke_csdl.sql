@@ -126,3 +126,166 @@ select s.*,c.name as class_name from students s  join classes c on s.class_id = 
 order by s.score desc, s.name asc
 ;
 
+
+ -- bài 4: sử dụng các hàm thông dụng
+  
+-- 1.1	Hiện thị danh sách các lớp và số lượng học viên của mỗi lớp
+select c.name as class_name, count(s.id) as sl
+from students s right join classes c on s.class_id = c.id
+group by c.id;
+;
+-- 1.2.	 Tính điểm lớn nhất của mỗi các lớp
+select c.name as class_name, max(s.score) as m_score
+from students s right join classes c on s.class_id = c.id
+group by c.id;
+-- 1.3	 Tình điểm trung bình  của từng lớp
+select c.name as class_name, avg(s.score) as avg_score
+from students s right join classes c on s.class_id = c.id
+group by c.id;
+
+-- 2 Lấy ra toàn bộ tên và ngày sinh các instructor và student ở CodeGym.
+select  s.name,s.birthday from students s
+union 
+select i.name,i.birthday from instructors i;
+-- sử dụng union để thực hiện full join
+select * from students s left join classes c on s.class_id = c.id
+union 
+select * from students s right join classes c on s.class_id = c.id;
+
+-- 4 Lấy ra  3 học viên có điểm cao nhất của trung tâm.
+select * from students s order by s.score desc limit 3;
+
+-- 3 record tiếp the0
+
+
+-- 5. Lấy ra các học viên có điểm số là cao nhất của trung tâm.
+
+-- 
+select * from students s where s.score = (select max(score) from students);
+
+-- 6 lấy ra tất cả các giảng viên chưa từng tham gia giảng dạy
+-- join bảng
+select i.* from instructors i left join instructors_classes ic on i.id =ic.instructor_id
+where ic.instructor_id is null;
+-- Câu truy vấn con;
+select * from instructors where id not in (select distinct ic.instructor_id from instructors_classes ic);
+
+-- index, view, sp, funciton, trigger
+
+drop index i_city on customers;
+select count(*) from customers;
+select count(*) from customers where city = 'lyon';
+explain select * from customers where city = 'lyon';
+explain select * from customers;
+
+create index i_city on customers(city);
+
+drop index i_city on customers;
+
+alter table customers add index i_phone_and_city(phone,city);
+
+alter table customers drop index i_phone_and_city;
+
+create view w_class_max_score as
+select c.name as class_name, max(s.score) as m_score
+from students s right join classes c on s.class_id = c.id
+group by c.id;
+create view w_students as
+select s.*
+from students s right join james j on s.username = j.username;
+
+select * from w_class_max_score;
+select * from w_students;
+
+-- sp không có tham số:
+delimiter //
+create procedure get_all()
+begin
+select s.*,c.name as class_name from students s join classes c on s.class_id = c.id;
+
+end //
+delimiter ;
+
+call get_all();
+
+delimiter //
+create procedure find_by_id(IN p_id int)
+begin
+select s.*,c.name as class_name from students s join classes c on s.class_id = c.id where s.id = p_id;
+end //
+delimiter ;
+call find_by_id(4);
+
+-- tạo hàm xep loại them điểm
+delimiter //
+create function xep_loai(p_score float)
+returns varchar(50)
+deterministic
+begin
+declare loai varchar(50);
+if p_score>=8 then
+set loai = 'giỏi';
+elseif p_score>=7 then
+set loai ='khá';
+elseif p_score>=5 then
+set loai ='trung bình';
+else
+set loai = 'yếu';
+end if;
+return loai;
+end //
+delimiter ;
+
+select xep_loai(7);
+
+
+select s.*,c.name as class_name, xep_loai(s.score) as xep_loai from students s join classes c on s.class_id = c.id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- tạo bảng để ghi log
+create table `history`(
+id int auto_increment primary key,
+name varchar(50),
+old_point int,
+new_point int,
+update_day date
+);
+-- tạo trigger
+DELIMITER //
+CREATE TRIGGER tr_history 
+AFTER UPDATE ON students
+FOR EACH ROW
+BEGIN
+insert into `history`(`name`, old_point, new_point, update_day) 
+values ( old.`name`, old.`score`,new.`score`,now());
+END //
+DELIMITER ;
+
+select * from history;
+select * from students;
+
+
