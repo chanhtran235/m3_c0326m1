@@ -7,4 +7,5 @@ import java.util.List;
 public interface IStudentRepository {
     List<Student> findAll();
     boolean add (Student student);
+    void deleteById(int deleteId);
 }

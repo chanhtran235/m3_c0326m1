@@ -15,15 +15,95 @@ import java.util.List;
 
 @WebServlet(name = "studentController", value = "/student")
 public class StudentController extends HttpServlet {
-   private IStudentService studentService = new StudentService();
+    private IStudentService studentService = new StudentService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("studentList",studentService.findAll());
-        req.getRequestDispatcher("views/student/list.jsp").forward(req,resp);
+        String action = req.getParameter("action");
+        if (action == null) {
+            action = "";
+        }
+        switch (action) {
+            case "add":
+                // trả về form thêm mơ
+                req.getRequestDispatcher("/views/student/add.jsp").forward(req, resp);
+                // thêm mới
+                break;
+            case "edit":
+                // thêm mới
+                break;
+            case "search":
+                // thêm mới
+                break;
+            default:
+                showList(req, resp);
+
+        }
+
+
+    }
+
+    private void showList(HttpServletRequest req, HttpServletResponse resp) {
+        req.setAttribute("studentList", studentService.findAll());
+        try {
+            req.getRequestDispatcher("views/student/list.jsp").forward(req, resp);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        String action = req.getParameter("action");
+        System.out.println("----------post -----------------");
+        if (action == null) {
+            action = "";
+        }
+        switch (action) {
+            case "add":
+                // gọi service lưu
+                System.out.println("--------add-------------");
+                save(req, resp);
+                // thêm mới
+                break;
+            case "delete":
+                deleteById(req, resp);
+                break;
+            default:
+                ;
+        }
     }
+
+    private void deleteById(HttpServletRequest req, HttpServletResponse resp) {
+        int deleteId = Integer.parseInt(req.getParameter("deleteId"));
+        studentService.deleteById(deleteId);
+        try {
+            resp.sendRedirect("/student?mess=Delete Success");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void save(HttpServletRequest req, HttpServletResponse resp) {
+        int id = Integer.parseInt(req.getParameter("id"));
+        String name = req.getParameter("name");
+        boolean gender = Boolean.getBoolean(req.getParameter("gender"));
+        float score = Float.parseFloat(req.getParameter("score"));
+        Student student = new Student(id, name, gender, score);
+        boolean isSuccess = studentService.add(student);
+        String mess = "Add Not Success";
+
+        if (isSuccess) {
+            mess = "Add Success";
+        }
+        try {
+            resp.sendRedirect("/student?mess=" + mess);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

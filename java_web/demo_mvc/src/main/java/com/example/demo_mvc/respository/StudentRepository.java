@@ -1,6 +1,7 @@
 package com.example.demo_mvc.respository;
 
 import com.example.demo_mvc.entity.Student;
+import com.sun.imageio.plugins.gif.GIFImageMetadataFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,16 @@ public class StudentRepository implements IStudentRepository{
 
     @Override
     public boolean add(Student student) {
-        return false;
+        return studentList.add(student);
+    }
+
+    @Override
+    public void deleteById(int deleteId) {
+        for (int i = 0; i <studentList.size() ; i++) {
+            if(studentList.get(i).getId()==deleteId){
+                studentList.remove(i);
+                break;
+            }
+        }
     }
 }
