@@ -15,6 +15,11 @@ public class Student {
         this.gender = gender;
         this.score = score;
     }
+    public Student(String name, boolean gender, float score) {
+        this.name = name;
+        this.gender = gender;
+        this.score = score;
+    }
 
     public int getId() {
         return id;

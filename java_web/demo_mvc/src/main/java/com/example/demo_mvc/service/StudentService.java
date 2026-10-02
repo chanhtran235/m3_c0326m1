@@ -19,7 +19,7 @@ public class StudentService implements IStudentService{
     }
 
     @Override
-    public void deleteById(int deleteId) {
-        studentRepository.deleteById(deleteId);
+    public boolean deleteById(int deleteId) {
+       return studentRepository.deleteById(deleteId);
     }
 }

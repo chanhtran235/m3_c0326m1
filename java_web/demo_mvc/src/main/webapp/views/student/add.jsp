@@ -13,10 +13,9 @@
 <body>
 <form action="/student?action=add" method="post">
     <h2>Add new student</h2>
-    Id: <input name="id"><br>
     Name: <input name="name">
-    Gender: <input type="radio" name="gender" value="true">Male
-     <input type="radio" name="gender" value="false">Female<br>
+    Gender: <input type="radio" name="gender" value="1">Male
+     <input type="radio" name="gender" value="0">Female<br>
     Score : <input name="score" type="number"><br>
     <button>Save</button>
 </form>

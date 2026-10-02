@@ -8,5 +8,5 @@ public interface IStudentService {
     List<Student> findAll();
     boolean add (Student student);
 
-    void deleteById(int deleteId);
+    boolean deleteById(int deleteId);
 }
