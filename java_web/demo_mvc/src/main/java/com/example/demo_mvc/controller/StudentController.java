@@ -1,6 +1,9 @@
 package com.example.demo_mvc.controller;
 
+import com.example.demo_mvc.entity.ClassCG;
 import com.example.demo_mvc.entity.Student;
+import com.example.demo_mvc.service.ClassService;
+import com.example.demo_mvc.service.IClassService;
 import com.example.demo_mvc.service.IStudentService;
 import com.example.demo_mvc.service.StudentService;
 import jakarta.servlet.ServletException;
@@ -16,6 +19,7 @@ import java.util.List;
 @WebServlet(name = "studentController", value = "/student")
 public class StudentController extends HttpServlet {
     private IStudentService studentService = new StudentService();
+    private IClassService classService = new ClassService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,7 +30,8 @@ public class StudentController extends HttpServlet {
         switch (action) {
             case "add":
                 // trả về form thêm mơ
-                req.getRequestDispatcher("/views/student/add.jsp").forward(req, resp);
+                showFormAdd(req,resp);
+
                 // thêm mới
                 break;
             case "edit":
@@ -34,12 +39,41 @@ public class StudentController extends HttpServlet {
                 break;
             case "search":
                 // thêm mới
+                searchByName(req,resp);
                 break;
             default:
                 showList(req, resp);
 
         }
 
+
+    }
+
+    private void showFormAdd(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            // trả về danh lớp học
+            List<ClassCG> classCGList = classService.findAll();
+            req.setAttribute("classList", classCGList );
+            req.getRequestDispatcher("/views/student/add.jsp").forward(req, resp);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void searchByName(HttpServletRequest req, HttpServletResponse resp) {
+        String searchName = req.getParameter("searchName");
+        req.setAttribute("studentList", studentService.searchByName(searchName));
+        req.setAttribute("searchName", searchName);
+        try {
+            req.getRequestDispatcher("views/student/list.jsp").forward(req, resp);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -91,7 +125,8 @@ public class StudentController extends HttpServlet {
         String g = req.getParameter("gender");
         boolean gender = Boolean.parseBoolean(g);
         float score = Float.parseFloat(req.getParameter("score"));
-        Student student = new Student(name, gender, score);
+        int classId = Integer.parseInt(req.getParameter("classId"));
+        Student student = new Student(name, gender, score,classId);
         boolean isSuccess = studentService.add(student);
         String mess = "Add Not Success";
 

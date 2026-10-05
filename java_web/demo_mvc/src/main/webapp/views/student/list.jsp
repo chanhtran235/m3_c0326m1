@@ -8,6 +8,11 @@
   <body>
   <c:import url="../layout/header.jsp"/>
    <h1>Danh sách sinh viên</h1>
+  <form action="/student" method="get">
+    <input hidden="hidden" name="action" value="search">
+    <input name="searchName" value="${searchName}" placeholder=" Nhập tên">
+    <button>Tìm tiếm</button>
+  </form>
   <p class="text-danger">${param.mess}</p>
   <a class="btn btn-primary btn-sm" href="/student?action=add">Thêm mới</a>
   <table class="table table-dark">
@@ -18,6 +23,7 @@
       <th>Gender</th>
       <th>Score</th>
       <th>Rank</th>
+      <th>Class name</th>
       <th>Delete</th>
     </tr>
     <c:forEach var="student" varStatus="status" items="${studentList}">
@@ -50,6 +56,7 @@
             </c:otherwise>
           </c:choose>
         </td>
+        <td>${student.className}</td>
         <td>
           <button onclick="getInfoDelete(`${student.id}`,'${student.name}')" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Delete
@@ -57,6 +64,11 @@
         </td>
       </tr>
     </c:forEach>
+    <c:if test="${studentList.isEmpty()}">
+      <tr>
+        <td colspan="7">Danh sách trống</td>
+      </tr>
+    </c:if>
   </table>
   <!-- Modal -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
